@@ -3,7 +3,10 @@
   import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
   import Nav from "../../../components/Nav.svelte";
-
+  //import 'monaco-editor/esm/vs/editor/browser/controller/coreCommands.js';
+  import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
+  //import * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
+  import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
   export let data;
   window.data = data;
   let SOUND = ["mp3", "wav", "ogg"];
@@ -53,7 +56,7 @@
         return new editorWorker();
       },
     };
-    Monaco = await import("monaco-editor");
+    Monaco = await import("monaco-editor/esm/vs/editor/editor.api.js");
     editor = Monaco.editor.create(divEl, {
       value: "",
       language: "json",
