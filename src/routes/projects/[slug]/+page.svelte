@@ -1,7 +1,5 @@
 <script>
-  import Prism from "svelte-prism";
   import "../../../app.css";
-  import { onMount } from "svelte";
   import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
   import Nav from "../../../components/Nav.svelte";

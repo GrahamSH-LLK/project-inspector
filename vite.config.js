@@ -3,10 +3,9 @@ import { defineConfig } from 'vite';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 
 export default defineConfig({
-	optimizeDeps: {
-		include: ['@turbowarp/sbdl'],
-	  },
-	
+
+	assetsInclude: ['**/*.ttf'],
+
 	plugins: [sveltekit()],
 	preprocess: vitePreprocess()
 
