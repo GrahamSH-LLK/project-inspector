@@ -69,7 +69,7 @@
         2
       ),
       language: "json",
-      theme: "vs-dark",
+      theme: "vs-light",
       readOnly: false,
     });
     window.editor = editor;
