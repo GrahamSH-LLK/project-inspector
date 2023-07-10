@@ -7,6 +7,7 @@
           >Home</a
         >
       </div>
-      <slot/>
   </div>
+  <slot/>
+
 </div>
