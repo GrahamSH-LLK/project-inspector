@@ -38,6 +38,16 @@
     );
     console.log("hi");
   };
+  const update = (x) => {
+    data.zip.file("project.json", x);
+  };
+  const download = async () => {
+    const blob = await data.zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    a.download = "project.sb3";
+    a.click();
+  }
   onMount(async () => {
     self.MonacoEnvironment = {
       getWorker: function (_moduleId, label) {
@@ -79,14 +89,16 @@
       },
     };
     console.log(editor);
-
+    content.subscribe(update);
     return () => {
       editor.dispose();
     };
   });
 </script>
 
-<Nav></Nav>
+<Nav >
+  <button on:click={download}>download</button>
+</Nav>  
 <div class="app">
   <h1>{data.project.title}</h1>
   <div class="flex-grow min-w-96 fixed h-screen w-1/2">
