@@ -21,5 +21,10 @@
 		"@turbowarp/sbdl": "^2.3.3",
 		"monaco-editor": "^0.40.0",
 		"svelte-prism": "^1.1.6"
-	}
+	},
+	"engines" : { 
+		"npm" : ">=8.0.0",
+		"node" : ">=16.0.0"
+	  }
+	
 }
