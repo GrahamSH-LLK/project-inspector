@@ -7,6 +7,7 @@
   import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
   //import * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
   import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
+  import {onMount} from 'svelte'
   export let data;
   window.data = data;
   let SOUND = ["mp3", "wav", "ogg"];
@@ -46,7 +47,6 @@
     progress.status = text;
     progress.level = loaded / total;
   };
-
   let createEditor = async () => {
     self.MonacoEnvironment = {
       getWorker: function (_moduleId, label) {
@@ -97,10 +97,11 @@
       editor.dispose();
     };
   };
+
   let download;
   const load = async () => {
     const project = await SBDL.downloadProjectFromID(data.params.slug, {onProgress: progressCallback});
-    createEditor();
+    //createEditor();
     zip = await SBDL.JSZip.loadAsync(project.arrayBuffer);
     download = async () => {
       const blob = await zip.generateAsync({ type: "blob" });
@@ -122,9 +123,15 @@
     {progress.status}
     <progress value={progress.level}></progress>
   {:then data}
+  
     <h1>{data.project.title}</h1>
+    {#await createEditor()}
+    loading editor
+    {:catch}
+    loading failed
+    {/await}
     <div class="flex-grow min-w-96 fixed h-screen w-1/2">
-      <div bind:this={divEl} class="h-full w-full" />
+      <div bind:this={divEl} class="editor h-full w-full" />
     </div>
 
     <div class="flex ml-[52%]">
