@@ -5,18 +5,19 @@
   import { goto } from '$app/navigation';
 
   const goToProject = () => {
+    if (!id) return
     let cleanId = id.replace('https://scratch.mit.edu/projects/', '');
     goto(`/projects/${cleanId}`)
   }
 </script>
 
 <Nav />
-<div class="app">
+<div class="app p-5">
   <input
     type="text"
     placeholder="104"
     bind:value={id}
     class="block bg-white w-64 border border-slate-300 rounded-md py-4 pl-3 pr-3 shadow-sm placeholder:italic text-2xl placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 "
   />
-  <button class="py-2 font-semibold text-sm bg-plurple text-white rounded-full shadow-sm px-4" on:click={goToProject}>Inspect</button>
+  <button class="py-2 mt-4 font-semibold text-sm bg-plurple text-white rounded-full shadow-sm px-4" on:click={goToProject}>Inspect</button>
 </div>

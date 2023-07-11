@@ -81,6 +81,33 @@
     };
     console.log(editor);
     content.subscribe(update);
+    /**/
+
+    return () => {
+      editor.dispose();
+    };
+  };
+  const filenameToJSONObj = async (filename) => {
+    const json = JSON.parse(
+          await toText(
+            Object.keys(zip.files).findLast((x) => x.includes("json"))
+          )
+        ).targets.reduce(function (acc, obj) { return [...acc, ...obj.sounds, ...obj.costumes] ; }, [])
+    //const reduced = json.targets.reduce(function (acc, obj) { return [...acc, ...obj.sounds, ...obj.costumes] ; }, []);
+    const found = json.findLast((x) => {return x.md5ext == filename});
+    //console.log(reduced, found, filename)
+    return found;
+
+
+  }
+
+  let download;
+  const load = async () => {
+    const project = await SBDL.downloadProjectFromID(data.params.slug, {onProgress: progressCallback});
+    //createEditor();
+
+
+    zip = await SBDL.JSZip.loadAsync(project.arrayBuffer);
     editor.setValue(
       JSON.stringify(
         JSON.parse(
@@ -92,17 +119,6 @@
         2
       )
     );
-
-    return () => {
-      editor.dispose();
-    };
-  };
-
-  let download;
-  const load = async () => {
-    const project = await SBDL.downloadProjectFromID(data.params.slug, {onProgress: progressCallback});
-    //createEditor();
-    zip = await SBDL.JSZip.loadAsync(project.arrayBuffer);
     download = async () => {
       const blob = await zip.generateAsync({ type: "blob" });
       const a = document.createElement("a");
@@ -119,23 +135,29 @@
   <Nav>
     <button on:click={download}>download</button>
   </Nav>
+  <div class="flex-grow min-w-96 fixed h-screen w-1/2">
+    <div bind:this={divEl} class="editor h-full w-full" />
+  </div>
+  {#await createEditor()}
+  loading editor
+  {:catch}
+  loading failed
+  {/await}
+
   {#await load()}
+  <div class="flex h-full w-full justify-end align-middle">
+    <div>
     {progress.status}
     <progress value={progress.level}></progress>
+  </div>
+    </div>
   {:then data}
   
-    <h1>{data.project.title}</h1>
-    {#await createEditor()}
-    loading editor
-    {:catch}
-    loading failed
-    {/await}
-    <div class="flex-grow min-w-96 fixed h-screen w-1/2">
-      <div bind:this={divEl} class="editor h-full w-full" />
-    </div>
 
-    <div class="flex ml-[52%]">
-      <table class="overflow-x-scroll">
+    <div class="flex ml-[52%] flex-col">
+        <h1>{data.project.title}</h1>
+
+      <table class="overflow-x-scroll text-sm">
         <thead>
           <tr>
             <th class="border border-slate-300" colspan="1">MD5</th>
@@ -144,12 +166,22 @@
         </thead>
         <tbody>
           {#each Object.keys(data.zip.files) as file}
+          {#if file != 'project.json'}
+
             <tr>
+
               <td class="border p-2 border-slate-300">
                 {file.split(".")[0]}
               </td>
               <td class="border p-2 border-slate-300">
                 {file.split(".")[1]}
+              </td>
+              <td class="border p-2 border-slate-300">
+                {#await filenameToJSONObj(file)}
+                
+                {:then data}
+                {data.name}
+                {/await}
               </td>
               <td class="border p-2 border-slate-300"
                 ><a
@@ -181,6 +213,7 @@
                 {/if}
               </td>
             </tr>
+            {/if}
           {/each}
         </tbody>
       </table>
