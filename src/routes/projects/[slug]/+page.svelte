@@ -138,7 +138,7 @@
     </svg>
     </button>
   </Nav>
-  <div class="flex-grow min-w-96 fixed h-screen w-1/2">
+  <div class="flex-grow  md:fixed h-screen w-screen md:w-1/2">
     <div bind:this={divEl} class="editor h-full w-full" />
   </div>
   {#await createEditor()}
@@ -157,7 +157,7 @@
   {:then data}
   
 
-    <div class="flex ml-[52%] flex-col">
+    <div class="flex md:ml-[52%] flex-col">
         <h1>{data.project.title}</h1>
 
       <table class="overflow-x-scroll text-xs">
