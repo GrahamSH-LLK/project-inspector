@@ -4,7 +4,7 @@
         <a
           href="/"
           class="font-black text-2xl text-white"
-          >Home</a
+          ><img src="/inspector.svg" class="h-10"></a
         >
       </div>
   </div>
