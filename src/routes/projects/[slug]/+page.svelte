@@ -133,7 +133,10 @@
 
 <div class="app">
   <Nav>
-    <button on:click={download}>download</button>
+    <button on:click={download}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white mx-2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    </svg>
+    </button>
   </Nav>
   <div class="flex-grow min-w-96 fixed h-screen w-1/2">
     <div bind:this={divEl} class="editor h-full w-full" />
@@ -157,11 +160,17 @@
     <div class="flex ml-[52%] flex-col">
         <h1>{data.project.title}</h1>
 
-      <table class="overflow-x-scroll text-sm">
+      <table class="overflow-x-scroll text-xs">
         <thead>
           <tr>
             <th class="border border-slate-300" colspan="1">MD5</th>
             <th class="border border-slate-300" colspan="1">File type</th>
+            <th class="border border-slate-300" colspan="1">Name</th>
+            <th class="border border-slate-300" colspan="1">URL</th>
+            <th class="border border-slate-300" colspan="1">Preview</th>
+
+
+
           </tr>
         </thead>
         <tbody>
@@ -178,7 +187,10 @@
               </td>
               <td class="border p-2 border-slate-300">
                 {#await filenameToJSONObj(file)}
-                
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
                 {:then data}
                 {data.name}
                 {/await}
