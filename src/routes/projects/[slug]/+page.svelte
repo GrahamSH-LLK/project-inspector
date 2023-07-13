@@ -4,10 +4,22 @@
   import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
   import Nav from "../../../components/Nav.svelte";
-  //import 'monaco-editor/esm/vs/editor/browser/controller/coreCommands.js';
+  import 'monaco-editor/esm/vs/editor/browser/coreCommands.js';
   import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
+  import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
+
   //import * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
   import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
+  import 'monaco-editor/esm/vs/editor/contrib/multicursor/browser/multicursor.js';
+  import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js'
+  import 'monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js'
+  import 'monaco-editor/esm/vs/editor/contrib/clipboard/browser/clipboard.js'
+  
+ import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
+ import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js';
+ import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js';
+ import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js';
+
   import {onMount} from 'svelte'
   export let data;
   window.data = data;
