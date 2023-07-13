@@ -1,4 +1,5 @@
 <script>
+  import JSZip from 'jszip'
   import "../../../app.css";
   import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
@@ -103,11 +104,13 @@
 
   let download;
   const load = async () => {
+    const SBDL = await import('@turbowarp/sbdl');
+
     const project = await SBDL.downloadProjectFromID(data.params.slug, {onProgress: progressCallback});
     //createEditor();
 
 
-    zip = await SBDL.JSZip.loadAsync(project.arrayBuffer);
+    zip = await JSZip.loadAsync(project.arrayBuffer);
     editor.setValue(
       JSON.stringify(
         JSON.parse(
