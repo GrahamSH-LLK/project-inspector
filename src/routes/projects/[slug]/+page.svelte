@@ -1,26 +1,26 @@
 <script>
-  import JSZip from 'jszip'
+  import JSZip from "jszip";
   import "../../../app.css";
   import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
   import Nav from "../../../components/Nav.svelte";
-  import 'monaco-editor/esm/vs/editor/browser/coreCommands.js';
-  import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
-  import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
+  import "monaco-editor/esm/vs/editor/browser/coreCommands.js";
+  import "monaco-editor/esm/vs/editor/contrib/find/browser/findController.js";
+  import "monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js";
 
   //import * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
-  import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
-  import 'monaco-editor/esm/vs/editor/contrib/multicursor/browser/multicursor.js';
-  import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js'
-  import 'monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js'
-  import 'monaco-editor/esm/vs/editor/contrib/clipboard/browser/clipboard.js'
-  
- import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
- import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js';
- import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js';
- import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js';
+  import "monaco-editor/esm/vs/language/json/monaco.contribution.js";
+  import "monaco-editor/esm/vs/editor/contrib/multicursor/browser/multicursor.js";
+  import "monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js";
+  import "monaco-editor/esm/vs/base/browser/ui/codicons/codiconStyles.js";
+  import "monaco-editor/esm/vs/editor/contrib/clipboard/browser/clipboard.js";
 
-  import {onMount} from 'svelte'
+  import "monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js";
+  import "monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js";
+  import "monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js";
+  import "monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js";
+
+  import { onMount } from "svelte";
   export let data;
   window.data = data;
   let SOUND = ["mp3", "wav", "ogg"];
@@ -102,25 +102,51 @@
   };
   const filenameToJSONObj = async (filename) => {
     const json = JSON.parse(
-          await toText(
-            Object.keys(zip.files).findLast((x) => x.includes("json"))
-          )
-        ).targets.reduce(function (acc, obj) { return [...acc, ...obj.sounds, ...obj.costumes] ; }, [])
+      await toText(Object.keys(zip.files).findLast((x) => x.includes("json")))
+    ).targets.reduce(function (acc, obj) {
+      return [...acc, ...obj.sounds, ...obj.costumes];
+    }, []);
     //const reduced = json.targets.reduce(function (acc, obj) { return [...acc, ...obj.sounds, ...obj.costumes] ; }, []);
-    const found = json.findLast((x) => {return x.md5ext == filename});
+    const found = json.findLast((x) => {
+      return x.md5ext == filename;
+    });
     //console.log(reduced, found, filename)
     return found;
-
-
-  }
+  };
 
   let download;
   const load = async () => {
-    const SBDL = await import('@turbowarp/sbdl');
+    const queryToken = new URLSearchParams(window.location.search).get("token");
+    const SBDL = await import("@turbowarp/sbdl");
+    const res = await fetch("");
+    //const project = await SBDL.downloadProjectFromJSON();
+    progressCallback("metadata", 0, 1);
+    let token, title;
+    try {
+      const meta = await SBDL.getProjectMetadata(data.params.slug, {
+        onProgress: progressCallback,
+      });
+      progressCallback("metadata", 1, 1);
 
-    const project = await SBDL.downloadProjectFromID(data.params.slug, {onProgress: progressCallback});
+      token = meta.project_token;
+      title = meta.title;
+    } catch (e) {}
+    const tokenPart = token
+      ? `?token=${token}`
+      : queryToken
+      ? `?token=${queryToken}`
+      : "";
+    const fullUrl =
+      `https://projects.scratch.mit.edu/${data.params.slug}` + tokenPart;
+    const project = await SBDL.downloadProjectFromURL(fullUrl, {
+      onProgress: progressCallback,
+    });
+    if (title) {
+      project.title = title;
+    }
+
+    //const project = await SBDL.downloadProjectFromID(data.params.slug, {onProgress: progressCallback});
     //createEditor();
-
 
     zip = await JSZip.loadAsync(project.arrayBuffer);
     editor.setValue(
@@ -148,32 +174,42 @@
 
 <div class="app">
   <Nav>
-    <button on:click={download}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white mx-2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-    </svg>
+    <button on:click={download}
+      ><svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6 text-white mx-2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+        />
+      </svg>
     </button>
   </Nav>
-  <div class="flex-grow  md:fixed h-screen w-screen md:w-1/2">
+  <div class="flex-grow md:fixed h-screen w-screen md:w-1/2">
     <div bind:this={divEl} class="editor h-full w-full" />
   </div>
   {#await createEditor()}
-  loading editor
+    loading editor
   {:catch}
-  loading failed
+    loading failed
   {/await}
 
   {#await load()}
-  <div class="flex h-full w-full justify-end align-middle">
-    <div>
-    {progress.status}
-    <progress value={progress.level}></progress>
-  </div>
+    <div class="flex h-full w-full justify-end align-middle">
+      <div>
+        {progress.status}
+        <progress value={progress.level} />
+      </div>
     </div>
   {:then data}
-  
-
     <div class="flex md:ml-[52%] flex-col">
-        <h1>{data.project.title}</h1>
+      <h1>{data.project.title}</h1>
 
       <table class="overflow-x-scroll text-xs">
         <thead>
@@ -183,63 +219,74 @@
             <th class="border border-slate-300" colspan="1">Name</th>
             <th class="border border-slate-300" colspan="1">URL</th>
             <th class="border border-slate-300" colspan="1">Preview</th>
-
-
-
           </tr>
         </thead>
         <tbody>
           {#each Object.keys(data.zip.files) as file}
-          {#if file != 'project.json'}
-
-            <tr>
-
-              <td class="border p-2 border-slate-300">
-                {file.split(".")[0]}
-              </td>
-              <td class="border p-2 border-slate-300">
-                {file.split(".")[1]}
-              </td>
-              <td class="border p-2 border-slate-300">
-                {#await filenameToJSONObj(file)}
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {:then data}
-                {data.name}
-                {/await}
-              </td>
-              <td class="border p-2 border-slate-300"
-                ><a
-                  class="text-[#855cd6]"
-                  href={`https://cdn.assets.scratch.mit.edu/internalapi/asset/${file}/get/`}
-                  target="_blank">URL</a
-                ></td
-              >
-              <td class="border border-slate-300">
-                {#if SOUND.includes(file.split(".").pop())}
-                  {#await toBase64(file, data.zip) then b64}
-                    <audio controls>
-                      <source
-                        src={"data:;base64," + b64}
-                        type={"audio/" + file.split(".").pop()}
-                      /></audio
+            {#if file != "project.json"}
+              <tr>
+                <td class="border p-2 border-slate-300">
+                  {file.split(".")[0]}
+                </td>
+                <td class="border p-2 border-slate-300">
+                  {file.split(".")[1]}
+                </td>
+                <td class="border p-2 border-slate-300">
+                  {#await filenameToJSONObj(file)}
+                    <svg
+                      class="animate-spin -ml-1 mr-3 h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
                     >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      />
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  {:then data}
+                    {data.name}
                   {/await}
-                {:else if IMAGE.includes(file.split(".").pop())}
-                  {#await toBase64(file, data.zip) then b64}
-                    <img
-                      class="max-h-32"
-                      src={`data:image/${file
-                        .split(".")
-                        .pop()
-                        .replaceAll("svg", "svg+xml")};base64,` + b64}
-                    />
-                  {/await}
-                {/if}
-              </td>
-            </tr>
+                </td>
+                <td class="border p-2 border-slate-300"
+                  ><a
+                    class="text-[#855cd6]"
+                    href={`https://cdn.assets.scratch.mit.edu/internalapi/asset/${file}/get/`}
+                    target="_blank">URL</a
+                  ></td
+                >
+                <td class="border border-slate-300">
+                  {#if SOUND.includes(file.split(".").pop())}
+                    {#await toBase64(file, data.zip) then b64}
+                      <audio controls>
+                        <source
+                          src={"data:;base64," + b64}
+                          type={"audio/" + file.split(".").pop()}
+                        /></audio
+                      >
+                    {/await}
+                  {:else if IMAGE.includes(file.split(".").pop())}
+                    {#await toBase64(file, data.zip) then b64}
+                      <img
+                        class="max-h-32"
+                        src={`data:image/${file
+                          .split(".")
+                          .pop()
+                          .replaceAll("svg", "svg+xml")};base64,` + b64}
+                      />
+                    {/await}
+                  {/if}
+                </td>
+              </tr>
             {/if}
           {/each}
         </tbody>
